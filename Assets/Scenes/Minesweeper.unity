@@ -249,7 +249,7 @@ MonoBehaviour:
   gridCellPrefab: {fileID: 8007184629640600607, guid: 4eef414feb8556441a338c452907dab1, type: 3}
   width: 10
   height: 10
-  bombCount: 2
+  bombCount: 10
 --- !u!4 &812690857
 Transform:
   m_ObjectHideFlags: 0

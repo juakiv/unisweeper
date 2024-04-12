@@ -118,4 +118,15 @@ public class MinesweeperGrid : MonoBehaviour
             }
         }
     }
+
+    public void RevealAllBombs()
+    {
+        foreach (Cell cell in _grid)
+        {
+            if (cell.isBomb && !cell.isRevealed)
+            {
+                cell.Reveal();
+            }
+        }
+    }
 }

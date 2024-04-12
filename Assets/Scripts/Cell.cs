@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class Cell : MonoBehaviour
 {
@@ -45,7 +43,7 @@ public class Cell : MonoBehaviour
         if (isBomb)
         {
             _renderer.material.color = Color.black;
-            // reveal all bombs
+            grid.RevealAllBombs();
         }
         else
         {
@@ -57,16 +55,30 @@ public class Cell : MonoBehaviour
             }
         }
     }
+
+    public void ToggleFlag()
+    {
+        isFlagged = !isFlagged;
+        // TODO: add flag sprite
+        _renderer.material.color = isFlagged ? Color.blue : isBomb ? Color.red : Color.white;
+    }
     
     void Update()
     {
         // TODO: remove this when vr stuff is implemented
-        if (Input.GetMouseButtonDown(0) &&
+        if (!isRevealed && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)) &&
             Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
         {
             if(hit.collider == _boxCollider)
             {
-                Reveal();
+                if(Input.GetMouseButtonDown(0))
+                {
+                    Reveal();
+                }
+                else if(Input.GetMouseButtonDown(1))
+                {
+                    ToggleFlag();
+                }
             }
         }
         if (_isRotating)
