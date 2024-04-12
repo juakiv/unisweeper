@@ -33,6 +33,9 @@ public class MinesweeperGrid : MonoBehaviour
                 newCell.transform.SetParent(transform);
                 
                 Cell cellComponent = newCell.GetComponent<Cell>();
+                cellComponent.x = x;
+                cellComponent.y = y;
+                cellComponent.grid = this;
                 _grid[x, y] = cellComponent;
             }
         }
@@ -94,5 +97,25 @@ public class MinesweeperGrid : MonoBehaviour
             }
         }
         return adjacentBombCount;
+    }
+
+    public void RevealAdjacentCells(int x, int y)
+    {
+        for (int xOffset = -1; xOffset <= 1; xOffset++)
+        {
+            for (int yOffset = -1; yOffset <= 1; yOffset++)
+            {
+                int neighbourX = x + xOffset;
+                int neighbourY = y + yOffset;
+                if (neighbourX >= 0 && neighbourX < width && neighbourY >= 0 && neighbourY < height)
+                {
+                    Cell neighbourCell = _grid[neighbourX, neighbourY];
+                    if (!neighbourCell.isRevealed)
+                    {
+                        neighbourCell.Reveal();
+                    }
+                }
+            }
+        }
     }
 }
