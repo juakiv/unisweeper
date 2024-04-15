@@ -1,13 +1,14 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 
 public class Cell : MonoBehaviour
 {
-    public bool isBomb = false;
-    public bool isFlagged = false;
-    public bool isRevealed = false;
-    public int adjacentBombCount = 0;
+    public bool isBomb;
+    public bool isFlagged;
+    public bool isRevealed;
+    public int adjacentBombCount;
 
     public int x;
     public int y;
@@ -18,13 +19,19 @@ public class Cell : MonoBehaviour
     private MeshRenderer _renderer;
     private BoxCollider _boxCollider;
     
-    private bool _isRotating = false;
+    private bool _isRotating;
+    private Vector3 _originalScale;
+    private Vector3 _targetScale;
+    private bool _isHovering;
 
     void Start()
     {
         _boxCollider = GetComponentInChildren<BoxCollider>();
         _renderer = GetComponentInChildren<MeshRenderer>();
         _textMesh = GetComponentInChildren<TextMeshPro>();
+
+        _originalScale = transform.localScale;
+        _targetScale = _originalScale * 1.1f;
         
         // TODO: remove this, only needed for debugging
         if (isBomb)
@@ -65,26 +72,35 @@ public class Cell : MonoBehaviour
     
     void Update()
     {
-        // TODO: remove this when vr stuff is implemented
-        if (!isRevealed && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)) &&
-            Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hit))
+        
+        // TODO: Remove this when VR stuff is done
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        
+        if(!isRevealed && Physics.Raycast(ray, out hit) && hit.collider == _boxCollider)
         {
-            if(hit.collider == _boxCollider)
+            if (Input.GetMouseButtonDown(0))
             {
-                if(Input.GetMouseButtonDown(0))
-                {
-                    Reveal();
-                }
-                else if(Input.GetMouseButtonDown(1))
-                {
-                    ToggleFlag();
-                }
+                Reveal();
             }
+            else if (Input.GetMouseButtonDown(1))
+            {
+                ToggleFlag();
+            }
+
+            _isHovering = true;
         }
+        else
+        {
+            _isHovering = false;
+        }
+        
         if (_isRotating)
         {
             StartCoroutine(RotateObject());
         }
+        
+        transform.localScale = Vector3.Lerp(transform.localScale, _isHovering ? _targetScale : _originalScale, Time.deltaTime * 5f);
     }
 
     IEnumerator RotateObject()
@@ -98,4 +114,5 @@ public class Cell : MonoBehaviour
         
         _isRotating = false;
     }
+    
 }
