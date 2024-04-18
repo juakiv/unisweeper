@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class Cell : MonoBehaviour
 {
@@ -17,7 +18,6 @@ public class Cell : MonoBehaviour
     
     private TextMeshPro _textMesh;
     private MeshRenderer _renderer;
-    private BoxCollider _boxCollider;
     
     private bool _isRotating;
     private Vector3 _originalScale;
@@ -26,7 +26,6 @@ public class Cell : MonoBehaviour
 
     void Start()
     {
-        _boxCollider = GetComponentInChildren<BoxCollider>();
         _renderer = GetComponentInChildren<MeshRenderer>();
         _textMesh = GetComponentInChildren<TextMeshPro>();
 
@@ -55,7 +54,6 @@ public class Cell : MonoBehaviour
         else
         {
             _renderer.material.color = Color.gray;
-            // reveal adjacent cells
             if (adjacentBombCount == 0)
             {
                 grid.RevealAdjacentCells(x, y);
@@ -66,35 +64,13 @@ public class Cell : MonoBehaviour
     public void ToggleFlag()
     {
         isFlagged = !isFlagged;
+        
         // TODO: add flag sprite
         _renderer.material.color = isFlagged ? Color.blue : isBomb ? Color.red : Color.white;
     }
     
     void Update()
     {
-        
-        // TODO: Remove this when VR stuff is done
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        
-        if(!isRevealed && Physics.Raycast(ray, out hit) && hit.collider == _boxCollider)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                Reveal();
-            }
-            else if (Input.GetMouseButtonDown(1))
-            {
-                ToggleFlag();
-            }
-
-            _isHovering = true;
-        }
-        else
-        {
-            _isHovering = false;
-        }
-        
         if (_isRotating)
         {
             StartCoroutine(RotateObject());
@@ -113,6 +89,29 @@ public class Cell : MonoBehaviour
         }
         
         _isRotating = false;
+    }
+
+    public void StartHoveringCell()
+    {
+        _isHovering = true;
+    }
+
+    public void EndHoveringCell()
+    {
+        _isHovering = false;
+    }
+
+    public void OnSelect(SelectEnterEventArgs args)
+    {
+        var interactor = args.interactorObject;
+        if(interactor.transform.GetComponent<ActionBasedController>().name == "Right Controller")
+        {
+            Reveal();
+        }
+        else if (interactor.transform.GetComponent<ActionBasedController>().name == "Left Controller")
+        {
+            ToggleFlag();
+        }
     }
     
 }

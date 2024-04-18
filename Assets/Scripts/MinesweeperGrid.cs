@@ -17,7 +17,7 @@ public class MinesweeperGrid : MonoBehaviour
         GenerateGrid();
         
         // move the grid to the center of the screen in X direction
-        transform.position = new Vector3(-width / 2f, 0, 0);
+        transform.position = new Vector3(-width / 2f, 0, 9);
     }
     
     private void GenerateGrid()
