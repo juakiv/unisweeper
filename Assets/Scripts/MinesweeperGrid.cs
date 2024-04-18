@@ -129,4 +129,9 @@ public class MinesweeperGrid : MonoBehaviour
             }
         }
     }
+
+    public bool IsWinner()
+    {
+        return false;
+    }
 }

@@ -59,6 +59,8 @@ public class Cell : MonoBehaviour
                 grid.RevealAdjacentCells(x, y);
             }
         }
+        
+        Debug.Log(grid.IsWinner());
     }
 
     public void ToggleFlag()
