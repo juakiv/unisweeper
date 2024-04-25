@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class MinesweeperGrid : MonoBehaviour
@@ -12,12 +13,29 @@ public class MinesweeperGrid : MonoBehaviour
 
     private Cell[,] _grid;
 
+    private int _playTime;
+    public GameObject playTimeText;
+    private TMP_Text _textMeshPro;
+
     private void Start()
     {
+        _textMeshPro = playTimeText.GetComponent<TMP_Text>();
+        _playTime = 0;
+        
         GenerateGrid();
         
         // move the grid to the center of the screen in X direction
         transform.position = new Vector3(-width / 2f, 0, 9);
+        playTimeText.transform.position = new Vector3(0, height + 2, 9);
+        
+        // start counting play time in seconds
+        InvokeRepeating("IncrementPlayTime", 1, 1);
+    }
+    
+    private void IncrementPlayTime()
+    {
+        _playTime++;
+        _textMeshPro.text = "Time: " + _playTime.ToString() + " s";
     }
     
     private void GenerateGrid()
