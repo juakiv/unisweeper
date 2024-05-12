@@ -65,10 +65,13 @@ public class Cell : MonoBehaviour
 
     public void ToggleFlag()
     {
+        if (grid.GetFlagsLeft() == 0) return;
+        
         isFlagged = !isFlagged;
         
         // TODO: add flag sprite
         _renderer.material.color = isFlagged ? Color.blue : isBomb ? Color.red : Color.white;
+        grid.UpdateFlagsLeft();
     }
     
     void Update()

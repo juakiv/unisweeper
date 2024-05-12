@@ -13,29 +13,83 @@ public class MinesweeperGrid : MonoBehaviour
 
     private Cell[,] _grid;
 
-    private int _playTime;
     public GameObject playTimeText;
+    public GameObject flagsLeftText;
+    public GameObject backgroundRect;
+    
     private TMP_Text _textMeshPro;
+    private TMP_Text _flagsLeftTextMeshPro;
+    private int _playTime;
 
     private void Start()
     {
         _textMeshPro = playTimeText.GetComponent<TMP_Text>();
+        _flagsLeftTextMeshPro = flagsLeftText.GetComponent<TMP_Text>();
+        _textMeshPro.text = "";
+        _flagsLeftTextMeshPro.text = "";
+        
+        _playTime = 0;
+        
+        backgroundRect.transform.localScale = new Vector3(width + 4, height + 6, 1);
+        
+        var position = backgroundRect.transform.position;
+        position = new Vector3(position.x, (height + 3) / 2f, position.z);
+        backgroundRect.transform.position = position;
+        backgroundRect.GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
+        
+        // // move the grid to the center of the screen in X direction
+        // transform.position = new Vector3(-width / 2f, 0.5f, 9);
+        //
+        //
+        // playTimeText.transform.position = new Vector3(0, height + 2.5f, 8.5f);
+    }
+
+    public void StartGame()
+    {
+        _textMeshPro.text = "Time: 0 s";
+        _flagsLeftTextMeshPro.text = "Flags: " + bombCount;
         _playTime = 0;
         
         GenerateGrid();
         
         // move the grid to the center of the screen in X direction
-        transform.position = new Vector3(-width / 2f, 0, 9);
-        playTimeText.transform.position = new Vector3(0, height + 2, 9);
+        transform.position = new Vector3(-width / 2f, 0.5f, 9);
+        backgroundRect.transform.localScale = new Vector3(width + 4, height + 6, 1);
+        
+        var position = backgroundRect.transform.position;
+        position = new Vector3(position.x, (height + 3) / 2f, position.z);
+        backgroundRect.transform.position = position;
+        backgroundRect.GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
+
+        playTimeText.transform.position = new Vector3(0, height + 2.5f, 8.5f);
         
         // start counting play time in seconds
-        InvokeRepeating("IncrementPlayTime", 1, 1);
+        InvokeRepeating(nameof(IncrementPlayTime), 1, 1);
     }
     
     private void IncrementPlayTime()
     {
         _playTime++;
         _textMeshPro.text = "Time: " + _playTime.ToString() + " s";
+    }
+
+    public int GetFlagsLeft()
+    {
+        int flaggedCells = 0;
+        foreach (Cell cell in _grid)
+        {
+            if (cell.isFlagged)
+            {
+                flaggedCells++;
+            }
+        }
+        
+        return bombCount - flaggedCells;
+    }
+
+    public void UpdateFlagsLeft()
+    {
+        _flagsLeftTextMeshPro.text = "Flags: " + GetFlagsLeft();
     }
     
     private void GenerateGrid()
