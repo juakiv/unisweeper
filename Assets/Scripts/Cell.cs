@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -43,6 +44,8 @@ public class Cell : MonoBehaviour
 
     public void Reveal()
     {
+        if (isRevealed || isFlagged) return;
+        if (grid.gameActive == false) return;
         isRevealed = true;
         _isRotating = true;
 
@@ -59,19 +62,21 @@ public class Cell : MonoBehaviour
                 grid.RevealAdjacentCells(x, y);
             }
         }
-        
-        Debug.Log(grid.IsWinner());
     }
 
     public void ToggleFlag()
     {
-        if (grid.GetFlagsLeft() == 0) return;
+        if (!isFlagged && grid.GetFlagsLeft() == 0) return;
+        if (isRevealed) return;
+        if (grid.gameActive == false) return;
         
         isFlagged = !isFlagged;
         
         // TODO: add flag sprite
         _renderer.material.color = isFlagged ? Color.blue : isBomb ? Color.red : Color.white;
         grid.UpdateFlagsLeft();
+        
+        if (grid.CheckWin()) grid.WinSequence();
     }
     
     void Update()

@@ -1,5 +1,8 @@
+using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class MinesweeperGrid : MonoBehaviour
 {
@@ -17,6 +20,11 @@ public class MinesweeperGrid : MonoBehaviour
     public GameObject flagsLeftText;
     public GameObject backgroundRect;
     public GameObject topTexts;
+    public GameObject winScreen;
+    public GameObject startScreen;
+    public GameObject lostScreen;
+
+    public bool gameActive = false;
     
     private TMP_Text _textMeshPro;
     private TMP_Text _flagsLeftTextMeshPro;
@@ -26,7 +34,10 @@ public class MinesweeperGrid : MonoBehaviour
     {
         _textMeshPro = playTimeText.GetComponent<TMP_Text>();
         _flagsLeftTextMeshPro = flagsLeftText.GetComponent<TMP_Text>();
+        
         topTexts.SetActive(false);
+        winScreen.SetActive(false);
+        lostScreen.SetActive(false);
         
         _playTime = 0;
         
@@ -35,34 +46,47 @@ public class MinesweeperGrid : MonoBehaviour
         var position = backgroundRect.transform.position;
         position = new Vector3(position.x, (height + 3) / 2f, position.z);
         backgroundRect.transform.position = position;
-        backgroundRect.GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
+        backgroundRect.GetComponentInChildren<MeshRenderer>().material.color = new Color(0.33f, 0.33f, 0.33f, 1f);
+    }
+
+    public void RestartGame()
+    {
+        topTexts.SetActive(false);
+        winScreen.SetActive(false);
+        lostScreen.SetActive(false);
+        startScreen.SetActive(true);
         
-        // // move the grid to the center of the screen in X direction
-        // transform.position = new Vector3(-width / 2f, 0.5f, 9);
-        //
-        //
-        // playTimeText.transform.position = new Vector3(0, height + 2.5f, 8.5f);
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+        }
+        
+        CancelInvoke(nameof(IncrementPlayTime));
     }
 
     public void StartGame()
     {
         topTexts.SetActive(true);
+        startScreen.SetActive(false);
+        
+        gameActive = true;
+        
         _textMeshPro.text = "Time: 0 s";
         _flagsLeftTextMeshPro.text = "Flags: " + bombCount;
         _playTime = 0;
         
+        transform.position = new Vector3(0, 0, 0);
         GenerateGrid();
         
         // move the grid to the center of the screen in X direction
-        transform.position = new Vector3(-width / 2f, 0.5f, 9);
+        transform.position = new Vector3(-width / 2f, 1.5f, 9);
         backgroundRect.transform.localScale = new Vector3(width + 4, height + 5, 1);
         
         var position = backgroundRect.transform.position;
         position = new Vector3(position.x, (height + 2.5f) / 2f, position.z);
         backgroundRect.transform.position = position;
-        backgroundRect.GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
 
-        topTexts.transform.position = new Vector3(0, height + 2f, 8.5f);
+        topTexts.transform.position = new Vector3(0, 0, 8.5f);
         
         playTimeText.GetComponent<RectTransform>().sizeDelta = new Vector2(width, playTimeText.GetComponent<RectTransform>().sizeDelta.y);
         flagsLeftText.GetComponent<RectTransform>().sizeDelta = new Vector2(width, flagsLeftText.GetComponent<RectTransform>().sizeDelta.y);
@@ -204,10 +228,49 @@ public class MinesweeperGrid : MonoBehaviour
                 cell.Reveal();
             }
         }
+        
+        LostSequence();
     }
 
-    public bool IsWinner()
+    public bool CheckWin()
     {
-        return false;
+        int flaggedMines = 0;
+        foreach (Cell cell in _grid)
+        {
+            if (cell.isBomb && cell.isFlagged)
+            {
+                flaggedMines++;
+            }
+        }
+
+        return flaggedMines == bombCount;
+    }
+
+    public void WinSequence()
+    {
+        topTexts.SetActive(false);
+        winScreen.SetActive(true);
+        
+        gameActive = false;
+        
+        CancelInvoke(nameof(IncrementPlayTime));
+        
+        winScreen.GetComponent<RectTransform>().sizeDelta = new Vector2(width, 5);
+        winScreen.transform.position = new Vector3(0, 0, 8.5f);
+        
+        winScreen.transform.Find("You won Seconds").GetComponent<TMP_Text>().text = "You won in " + _playTime + " seconds!";
+    }
+
+    public void LostSequence()
+    {
+        topTexts.SetActive(false);
+        lostScreen.SetActive(true);
+        
+        gameActive = false;
+        
+        CancelInvoke(nameof(IncrementPlayTime));
+
+        lostScreen.GetComponent<RectTransform>().sizeDelta = new Vector2(width, 5);
+        lostScreen.transform.position = new Vector3(0, 0, 8.5f);
     }
 }
