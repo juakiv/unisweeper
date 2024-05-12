@@ -16,6 +16,7 @@ public class MinesweeperGrid : MonoBehaviour
     public GameObject playTimeText;
     public GameObject flagsLeftText;
     public GameObject backgroundRect;
+    public GameObject topTexts;
     
     private TMP_Text _textMeshPro;
     private TMP_Text _flagsLeftTextMeshPro;
@@ -25,8 +26,7 @@ public class MinesweeperGrid : MonoBehaviour
     {
         _textMeshPro = playTimeText.GetComponent<TMP_Text>();
         _flagsLeftTextMeshPro = flagsLeftText.GetComponent<TMP_Text>();
-        _textMeshPro.text = "";
-        _flagsLeftTextMeshPro.text = "";
+        topTexts.SetActive(false);
         
         _playTime = 0;
         
@@ -46,6 +46,7 @@ public class MinesweeperGrid : MonoBehaviour
 
     public void StartGame()
     {
+        topTexts.SetActive(true);
         _textMeshPro.text = "Time: 0 s";
         _flagsLeftTextMeshPro.text = "Flags: " + bombCount;
         _playTime = 0;
@@ -54,14 +55,17 @@ public class MinesweeperGrid : MonoBehaviour
         
         // move the grid to the center of the screen in X direction
         transform.position = new Vector3(-width / 2f, 0.5f, 9);
-        backgroundRect.transform.localScale = new Vector3(width + 4, height + 6, 1);
+        backgroundRect.transform.localScale = new Vector3(width + 4, height + 5, 1);
         
         var position = backgroundRect.transform.position;
-        position = new Vector3(position.x, (height + 3) / 2f, position.z);
+        position = new Vector3(position.x, (height + 2.5f) / 2f, position.z);
         backgroundRect.transform.position = position;
         backgroundRect.GetComponentInChildren<MeshRenderer>().material.color = Color.gray;
 
-        playTimeText.transform.position = new Vector3(0, height + 2.5f, 8.5f);
+        topTexts.transform.position = new Vector3(0, height + 2f, 8.5f);
+        
+        playTimeText.GetComponent<RectTransform>().sizeDelta = new Vector2(width, playTimeText.GetComponent<RectTransform>().sizeDelta.y);
+        flagsLeftText.GetComponent<RectTransform>().sizeDelta = new Vector2(width, flagsLeftText.GetComponent<RectTransform>().sizeDelta.y);
         
         // start counting play time in seconds
         InvokeRepeating(nameof(IncrementPlayTime), 1, 1);
