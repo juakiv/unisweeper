@@ -38,11 +38,7 @@ public class Cell : MonoBehaviour
         flagAsset.enabled = false;
         
         // TODO: remove this, only needed for debugging
-        if (isBomb)
-        {
-            _renderer.material.color = Color.red;
-        }
-        else
+        if (!isBomb)
         {
             bombAsset.enabled = false;
         }
@@ -81,7 +77,7 @@ public class Cell : MonoBehaviour
         isFlagged = !isFlagged;
         
         flagAsset.enabled = isFlagged;
-        _renderer.material.color = isFlagged ? Color.blue : isBomb ? Color.red : Color.white;
+        _renderer.material.color = isFlagged ? Color.blue : Color.white;
         grid.UpdateFlagsLeft();
         
         if (grid.CheckWin()) grid.WinSequence();
