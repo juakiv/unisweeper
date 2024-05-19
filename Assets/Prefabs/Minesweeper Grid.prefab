@@ -53,3 +53,6 @@ MonoBehaviour:
   backgroundRect: {fileID: 0}
   topTexts: {fileID: 0}
   winScreen: {fileID: 0}
+  startScreen: {fileID: 0}
+  lostScreen: {fileID: 0}
+  gameActive: 0

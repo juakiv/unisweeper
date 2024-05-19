@@ -23,6 +23,10 @@ public class MinesweeperGrid : MonoBehaviour
     public GameObject winScreen;
     public GameObject startScreen;
     public GameObject lostScreen;
+    
+    public AudioSource audioSource;
+    public AudioClip explosionSound;
+    public AudioClip winSound;
 
     public bool gameActive = false;
     
@@ -229,6 +233,8 @@ public class MinesweeperGrid : MonoBehaviour
             }
         }
         
+        
+        
         LostSequence();
     }
 
@@ -251,6 +257,8 @@ public class MinesweeperGrid : MonoBehaviour
         topTexts.SetActive(false);
         winScreen.SetActive(true);
         
+        audioSource.PlayOneShot(winSound, 0.6f);
+        
         gameActive = false;
         
         CancelInvoke(nameof(IncrementPlayTime));
@@ -265,6 +273,8 @@ public class MinesweeperGrid : MonoBehaviour
     {
         topTexts.SetActive(false);
         lostScreen.SetActive(true);
+        
+        audioSource.PlayOneShot(explosionSound, 0.6f);
         
         gameActive = false;
         

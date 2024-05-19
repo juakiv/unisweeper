@@ -1,8 +1,7 @@
-using System;
 using System.Collections;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit;
 
 public class Cell : MonoBehaviour
@@ -19,6 +18,9 @@ public class Cell : MonoBehaviour
     
     private TextMeshPro _textMesh;
     private MeshRenderer _renderer;
+
+    public RawImage bombAsset;
+    public RawImage flagAsset;
     
     private bool _isRotating;
     private Vector3 _originalScale;
@@ -33,10 +35,16 @@ public class Cell : MonoBehaviour
         _originalScale = transform.localScale;
         _targetScale = _originalScale * 1.1f;
         
+        flagAsset.enabled = false;
+        
         // TODO: remove this, only needed for debugging
         if (isBomb)
         {
             _renderer.material.color = Color.red;
+        }
+        else
+        {
+            bombAsset.enabled = false;
         }
         
         _textMesh.text = adjacentBombCount > 0 ? adjacentBombCount.ToString() : "";
@@ -72,7 +80,7 @@ public class Cell : MonoBehaviour
         
         isFlagged = !isFlagged;
         
-        // TODO: add flag sprite
+        flagAsset.enabled = isFlagged;
         _renderer.material.color = isFlagged ? Color.blue : isBomb ? Color.red : Color.white;
         grid.UpdateFlagsLeft();
         
